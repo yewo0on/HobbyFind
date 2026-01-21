@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Heart, ChevronDown } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
 
 import {
   Select,
@@ -11,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 
 const CATEGORIES = [
   { path: '/sports', label: '운동형' },
@@ -21,6 +23,7 @@ const CATEGORIES = [
 export default function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const getCurrentCategory = () => {
     if (pathname.startsWith('/sports')) return '/sports';
@@ -42,22 +45,64 @@ export default function TopBar() {
             HobbyFind
           </span>
         </Link>
-        <Select value={getCurrentCategory() || undefined} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="h-auto w-auto border-none bg-transparent px-3 py-2 text-sm font-medium text-textSecondary shadow-none hover:text-textPrimary focus:ring-0 focus:ring-offset-0">
-            <SelectValue placeholder="카테고리">
-              {getCurrentCategory()
-                ? CATEGORIES.find((c) => c.path === getCurrentCategory())?.label
-                : '카테고리'}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {CATEGORIES.map((category) => (
-              <SelectItem key={category.path} value={category.path}>
-                {category.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-4">
+          <Select
+            value={getCurrentCategory() || undefined}
+            onValueChange={handleCategoryChange}
+          >
+            <SelectTrigger className="h-auto w-auto border-none bg-transparent px-3 py-2 text-sm font-medium text-textSecondary shadow-none hover:text-textPrimary focus:ring-0 focus:ring-offset-0">
+              <SelectValue placeholder="카테고리">
+                {getCurrentCategory()
+                  ? CATEGORIES.find((c) => c.path === getCurrentCategory())
+                      ?.label
+                  : '카테고리'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map((category) => (
+                <SelectItem key={category.path} value={category.path}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {status === 'authenticated' ? (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/mypage"
+                className="text-sm font-medium text-textSecondary hover:text-textPrimary"
+              >
+                마이페이지
+              </Link>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-grayBorder text-sm"
+                onClick={() => signOut({ callbackUrl: '/' })}
+              >
+                로그아웃
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-textSecondary hover:text-textPrimary"
+              >
+                로그인
+              </Link>
+              <Link href="/signup">
+                <Button
+                  size="sm"
+                  className="bg-primary text-xs font-semibold text-white hover:bg-primary/90"
+                >
+                  회원가입
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

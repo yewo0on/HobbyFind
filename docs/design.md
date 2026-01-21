@@ -319,7 +319,6 @@ Main Content (Hobby Grid)
 ---
 
 ### 모바일 가이드
-
 * Top Bar 버튼 간격 축소
 * Hero 텍스트 크기 감소
 * 카드 터치 영역 확보 (`min-h`)
