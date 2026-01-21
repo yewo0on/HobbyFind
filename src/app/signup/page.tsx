@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -38,7 +38,7 @@ const signupSchema = z
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
-export default function SignupPage() {
+function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || '/login';
@@ -52,7 +52,7 @@ export default function SignupPage() {
       email: '',
       password: '',
       confirmPassword: '',
-      agree: false,
+      agree: true,
     },
   });
 
@@ -201,6 +201,23 @@ export default function SignupPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-grayBg px-4 py-10">
+        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-md">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded mb-6"></div>
+          </div>
+        </div>
+      </main>
+    }>
+      <SignupForm />
+    </Suspense>
   );
 }
 
